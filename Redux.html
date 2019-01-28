@@ -1,0 +1,105 @@
+<!doctype <!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+    <script src="main.js"></script>
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/redux/4.0.1/redux.min.js" />
+</head>
+<body>
+
+    <script>
+    
+    const createPolicy = (name, amount) => {
+  return {
+    type:"CREATE_POLICY",
+    payload: {
+      name:name,
+      amount:amount
+    }
+  };
+};
+
+const deletePolicy = (name) => {
+  return{
+    type:"DELETE_POLICY",
+    payload:{
+      name:name
+    }
+  };
+};
+
+const createClaim = (name, amountOfMoneyToCollect) => {
+  return{
+   type: "CREATE_CLAIM",
+    payload:{
+      name: name,
+      amountOfMoneyToCollect:amountOfMoneyToCollect
+    }
+  };
+};
+
+
+//Reducer 
+const claimHistory = (oldListOfClaims=[], action) => {
+  if(action.type === "CREATE_POLICY"){
+    return [...oldListOfClaims, action.payload];
+  }
+  return oldListOfClaims;
+};
+
+const accounting = (bagOfMoney = 100, action) => {
+  if(action.type === "CREATE_CLAIM"){
+    return bagOfMoney - action.payload.amountOfMoneyToCollect
+  }
+  else if(action.type === "CREATE_POLICY"){
+    return bagOfMoney + action.payload.amount;
+  }
+  
+  return bagOfMoney;
+};
+
+const policy= (policyList = [], action) => {
+  if(action.type === "CREATE_POLICY"){
+    return [...policyList, action.payload.name];
+  }
+  else if(action.type === "DELETE_POLICY"){
+    return policyList.filter((name) =>  {
+       return name !== action.payload.name
+    });
+  }
+   return policyList;
+}
+
+
+
+const {createStore, combineReducers } = Redux;
+
+const ourDepartments = combineReducers({
+  claimHistory: claimHistory,
+  accounting: accounting,
+  policy: policy 
+});
+
+const store= createStore(ourDepartments);
+
+//const action = createPolicy('alex', 20);
+
+//store.dispatch(action);
+store.dispatch(createPolicy('alexa', 20));
+store.dispatch(createPolicy('jane', 20));
+console.log(store.getState());
+store.dispatch(deletePolicy('jane'));
+
+console.log(store.getState());
+
+
+
+    </script>
+    
+</body>
+</html>
